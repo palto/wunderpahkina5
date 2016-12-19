@@ -23,11 +23,9 @@ public class SolutionDrawer {
                 .handlers(chain -> chain
                         .get(ctx -> ctx.getResponse()
                                 .contentType("image/png")
-                                .noCompress()
                                 .send(new SolutionDrawer(DEFAULT_PUZZLE_IMAGE_URL).solutionImage()))
                         .get("debug", ctx -> ctx.getResponse()
                                 .contentType("image/png")
-                                .noCompress()
                                 .send(new SolutionDrawer(DEFAULT_PUZZLE_IMAGE_URL, true).solutionImage()))
                 )
         );
