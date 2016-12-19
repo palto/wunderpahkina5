@@ -25,35 +25,65 @@ public class Main {
                         .get(ctx -> ctx.getResponse()
                                 .contentType("image/png")
                                 .noCompress()
-                                .send(solutionImage(DEFAULT_PUZZLE_IMAGE_URL)))
+                                .send(new SolutionDrawer(DEFAULT_PUZZLE_IMAGE_URL).solutionImage()))
                 )
         );
     }
 
-    private static byte[] solutionImage(String url) throws IOException {
-        BufferedImage puzzleImage = getImage(url);
-        int height = puzzleImage.getHeight();
-        int width = puzzleImage.getWidth();
-        Color emptyColor = new Color(0, 0, 0, 0);
-        Color drawColor = new Color(255, 0, 0, 255);
-        BufferedImage solutionImage = new BufferedImage(width, height, puzzleImage.getType());
-        int y = 0;
-        while (y < height) {
-            int x = 0;
-            while (x < width) {
-                Color puzzleColor = new Color(puzzleImage.getRGB(x, y), true);
-                if (isActionColor(puzzleColor)) {
-                    solutionImage.setRGB(x, y, drawColor.getRGB());
-                } else {
-                    solutionImage.setRGB(x, y, emptyColor.getRGB());
-                }
-                x++;
-            }
-            y++;
+    private static class SolutionDrawer {
+
+        private static final Color EMPTY_COLOR = new Color(0, 0, 0, 0);
+        private static final Color DEBUG_COLOR = new Color(255, 0, 0, 255);
+        private static final Color DRAW_COLOR = new Color(255, 255, 255, 255);
+        private enum Direction {
+            UP, DOWN, LEFT, RIGHT;
         }
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        ImageIO.write(solutionImage, "png", output);
-        return output.toByteArray();
+
+        private final String url;
+        private BufferedImage puzzleImage;
+        private BufferedImage solutionImage;
+        private int height;
+        private int width;
+        private int x;
+        private int y;
+
+        private SolutionDrawer(String url) {
+            this.url = url;
+        }
+
+        private byte[] solutionImage() throws IOException {
+            puzzleImage = getImage(url);
+            int height = puzzleImage.getHeight();
+            int width = puzzleImage.getWidth();
+            solutionImage = new BufferedImage(width, height, puzzleImage.getType());
+
+            y = 0;
+            while (y < height) {
+                x = 0;
+                while (x < width) {
+                    debugPixel(x, y);
+                    x++;
+                }
+                y++;
+            }
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(solutionImage, "png", output);
+            return output.toByteArray();
+        }
+
+        private void debugPixel(int x, int y) {
+            Color puzzleColor = new Color(puzzleImage.getRGB(x, y), true);
+            if (isActionColor(puzzleColor)) {
+                solutionImage.setRGB(x, y, DEBUG_COLOR.getRGB());
+            } else {
+                solutionImage.setRGB(x, y, EMPTY_COLOR.getRGB());
+            }
+        }
+
+        private void drawState(){
+
+        }
+
     }
 
     private static boolean isActionColor(Color color) {
