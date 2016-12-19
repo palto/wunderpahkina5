@@ -16,7 +16,8 @@ import java.util.Arrays;
 public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
-    private static final String DEFAULT_URL = "https://cloud.githubusercontent.com/assets/14271859/21306742/3663c24c-c5db-11e6-8be5-e358d0e0215a.png";
+    private static final String DEFAULT_PUZZLE_IMAGE_URL
+            = "https://cloud.githubusercontent.com/assets/14271859/21306742/3663c24c-c5db-11e6-8be5-e358d0e0215a.png";
 
     public static void main(String[] args) throws Exception {
         RatpackServer.start(server -> server
@@ -24,7 +25,7 @@ public class Main {
                         .get(ctx -> ctx.getResponse()
                                 .contentType("image/png")
                                 .noCompress()
-                                .send(solutionImage(DEFAULT_URL)))
+                                .send(solutionImage(DEFAULT_PUZZLE_IMAGE_URL)))
                 )
         );
     }
